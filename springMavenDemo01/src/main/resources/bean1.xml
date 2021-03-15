@@ -4,7 +4,15 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 <!--    配置user 类对象-->
+<!--    set方法注入-->
     <bean id="user" class="com.geek.User">
         <property name="name" value="wuhu"></property>
+        <property name="author" value="qifei"></property>
+    </bean>
+<!--    有参构造器注入属性-->
+    <bean id="order" class="com.geek.Order">
+<!--        因为默认为无惨构造，所以加上有参构造-->
+        <constructor-arg name="oName" value="something"></constructor-arg>
+        <constructor-arg name="address" value="mars"></constructor-arg>
     </bean>
 </beans>

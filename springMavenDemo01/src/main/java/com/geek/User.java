@@ -13,24 +13,25 @@ public class User implements BeanNameAware {
 
     private String name;
 
-    private String beanName;
+    private String author;
 
-    public String getName() {
-        return name;
-    }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getBeanName() {
-        return beanName;
-    }
-    public void setBeanName(String s) {
-        this.beanName = beanName;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public void add(){
-        System.out.println("add...");
+        System.out.println(name + ','+ author);
     }
+
+
+    public void setBeanName(String s) {
+
+    }
+
+
 }
