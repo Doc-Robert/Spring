@@ -1,4 +1,4 @@
-package com.geek;
+package com.geek.entity;
 
 import org.springframework.beans.factory.BeanNameAware;
 
@@ -15,6 +15,8 @@ public class User implements BeanNameAware {
 
     private String author;
 
+    private String address;
+
 
     public void setName(String name) {
         this.name = name;
@@ -24,14 +26,19 @@ public class User implements BeanNameAware {
         this.author = author;
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public void add(){
-        System.out.println(name + ','+ author);
+        System.out.println(name + ','+ author+','+ address);
     }
 
 
     public void setBeanName(String s) {
 
     }
+
 
 
 }

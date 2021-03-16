@@ -1,6 +1,7 @@
 package com.geek;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
+import com.geek.entity.Order;
+import com.geek.entity.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -19,10 +20,10 @@ public class TestSpring {
         //2.获取配置创建的对象
         //注意id对应
         User user = context.getBean("user", User.class);
-//        System.out.println(user);
-//        user.add();
         Order orders = context.getBean("order", Order.class);
-        orders.orderTest();
+//        System.out.println(user);
+        user.add();
+//        orders.orderTest();
     }
 
 

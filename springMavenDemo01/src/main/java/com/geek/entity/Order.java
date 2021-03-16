@@ -1,4 +1,4 @@
-package com.geek;
+package com.geek.entity;
 
 /**
  * @Author Robert

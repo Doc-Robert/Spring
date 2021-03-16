@@ -2,16 +2,25 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<!--    使用名称空间方式-->
+    <!--       xmlns:p="http://www.springframework.org/schema/p"-->
 
 <!--    配置user 类对象-->
 <!--    set方法注入-->
-    <bean id="user" class="com.geek.User">
+    <bean id="user" class="com.geek.entity.User">
         <property name="name" value="wuhu"></property>
         <property name="author" value="qifei"></property>
+        <!-- 属性值包含特殊符号
+            1 把<>进行转义 &lt &gt
+            2 内容写到CDATA
+        -->
+        <property name="address">
+            <value><![CDATA[<<地区>>]]></value>
+        </property>
     </bean>
-<!--    有参构造器注入属性-->
-    <bean id="order" class="com.geek.Order">
-<!--        因为默认为无惨构造，所以加上有参构造-->
+        <!--    有参构造器注入属性-->
+    <bean id="order" class="com.geek.entity.Order">
+        <!--        因为默认为无惨构造，所以加上有参构造-->
         <constructor-arg name="oName" value="something"></constructor-arg>
         <constructor-arg name="address" value="mars"></constructor-arg>
     </bean>

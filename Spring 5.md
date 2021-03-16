@@ -171,5 +171,227 @@ IOC 过程
 >       </bean>
 >   ~~~
 >
->   
+
+
+
+- #### xml注入其他类型属性
+
+  - **字面量**
+
+    > - null值
+    >
+    > ~~~xml
+    >  <property name="author">
+    >      <null/>
+    > </property>
+    > ~~~
+    >
+    > - 属性值包含特殊符号
+    >
+    > ~~~xml
+    >         <!-- 属性值包含特殊符号
+    >             1 把<>进行转义 &lt &gt
+    >             2 内容写到CDATA
+    >         -->
+    >         <property name="address">
+    >             <value><![CDATA[<<地区>>]]></value>
+    >         </property>
+    > ~~~
+    >
+    > 使用CDATA
+
+  
+
+  - **注入属性 -外部bean**
+
+    1. 创建两个类service 类和dao 类
+
+    2. 在service中调用dao里面的方法
+
+       > dao层
+       > ~~~java
+       > public class UserDaoImpl implements UserDao{
+       >     public void update() {
+       >         System.out.println("dao update...");
+       >     }
+       > }
+       > ~~~
+
+       > service层
+       > ~~~java
+       > public class UserService {
+       >     
+       >     private UserDao userDao;
+       >     
+       >     public void setUserDao(UserDao userDao) {
+       >         this.userDao = userDao;
+       >     }
+       >     
+       >     public void add(){
+       >         System.out.println("service add ....");
+       >         userDao.update();//调用
+       >     }
+       >     
+       > }
+       > ~~~
+
+       
+
+    3. 在spring配置文件中进行配置
+
+    ~~~xml
+    <!--    1 service 和dao 对象的创建-->
+        <bean id="userService" class="com.geek.service.UserService">
+            <!--    注入 userDao 对象
+                    name属性：类里面属性名称
+                    ref属性：创建userDao对象bean标签id值
+            -->
+            <property name="userDao" ref="userDaoImpl"></property>
+        </bean>
+        <bean id="userDaoImpl" class="com.geek.dao.UserDaoImpl"></bean>
+    ~~~
+    
+    
+    
+  - **注入属性 -内部bean和级联赋值**
+  
+    - 一对多的gaunx
+    - 在实体类中表示一对多
+
+~~~xml
+<!--    员工配置文件-->
+    <bean id="emp" class="com.geek.entity.Emp">
+<!--        设置属性-->
+        <property name="ename" value="Reines"></property>
+        <property name="gender" value="girl"></property>
+<!--    设置对象类型属性-->
+        <property name="dept" ref="dept"></property>
+        <property name="dept.dname" value="planet"></property>
+    </bean>
+    <bean id="dept" class="com.geek.entity.Dept">
+        <property name="dname" value="magic"></property>
+    </bean>
+~~~
+
+
+
+### 2.3.3 xml 注入集合属性
+
+**1、注入数组类型属性**
+
+**2、注入list类型属性**
+
+**3、注入Map集合类型属性**
+
+​	key value 以键值形式注入
+
+**4、注入set类型**
+
+ ~~~xml
+    <bean id="collType" class="com.geek.entity.CollType">
+<!--数组类型注入        -->
+        <property name="courses">
+            <array>
+                <value>Reines</value>
+                <value>magic</value>
+            </array>
+        </property>
+<!--list类型注入        -->
+        <property name="lists">
+            <list>
+                <value>Reines2</value>
+                <value>magic2</value>
+            </list>
+        </property>
+<!--map类型        -->
+        <property name="maps">
+            <map>
+                <entry key="ccc" value="Reines3"></entry>
+                <entry key="bbb" value="magic3"></entry>
+            </map>
+        </property>
+<!--set类型        -->
+        <property name="sets">
+            <set>
+                <value>Reines4</value>
+                <value>magic4</value>
+            </set>
+        </property>
+    </bean>
+ ~~~
+
+console
+
+~~~console
+[Reines, magic]
+[Reines2, magic2]
+{ccc=Reines3, bbb=magic3}
+[Reines4, magic4]
+~~~
+
+
+
+**5、在list集合里设置对象**
+
+~~~java
+  //list 集合中放置对象
+    private List<Course> courseList;
+~~~
+
+注入
+
+~~~xml
+<!--        增加的对象集合-->
+        <property name="courseList">
+            <list>
+                <ref bean="course1"></ref>
+                <ref bean="course2"></ref>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="course1" class="com.geek.entity.Course">
+        <property name="cname" value="spring"></property>
+    </bean>
+    <bean id="course2" class="com.geek.entity.Course">
+        <property name="cname" value="mybatis"></property>
+    </bean>
+~~~
+
+ **6、把集合注入部分提取出来**
+
+-  xml配置文件中引入名称空间
+
+
+    ~~~~XML
+xmlns:util="http://www.springframework.org/schema/util"
+    ~~~~
+
+~~~xml
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+~~~
+
+
+
+- util标签完成list集合注入提取
+
+    ~~~xml
+    <!--提取list集合类型属性注入-->
+    <util:list id="bookList">
+        <value>Reines</value>
+        <value>Gilbert</value>
+        <value>magic</value>
+    </util:list>
+    <!--2 提取list 集合类型属性注入使用-->
+    <bean id="book" class="com.geek.entity.Book">
+        <property name="list" ref="bookList"></property>
+    </bean>
+    ~~~
+
+
+
+​    
+
+​    
 

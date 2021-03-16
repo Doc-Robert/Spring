@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--提取list集合类型属性注入-->
+    <util:list id="bookList">
+        <value>Reines</value>
+        <value>Gilbert</value>
+        <value>magic</value>
+    </util:list>
+    <!--2 提取list 集合类型属性注入使用-->
+    <bean id="book" class="com.geek.entity.Book">
+        <property name="list" ref="bookList"></property>
+    </bean>
+
+    <bean id="collType" class="com.geek.entity.CollType">
+<!--数组类型注入        -->
+        <property name="courses">
+            <array>
+                <value>Reines</value>
+                <value>magic</value>
+            </array>
+        </property>
+<!--list类型注入        -->
+        <property name="lists">
+            <list>
+                <value>Reines2</value>
+                <value>magic2</value>
+            </list>
+        </property>
+<!--map类型        -->
+        <property name="maps">
+            <map>
+                <entry key="ccc" value="Reines3"></entry>
+                <entry key="bbb" value="magic3"></entry>
+            </map>
+        </property>
+<!--set类型        -->
+        <property name="sets">
+            <set>
+                <value>Reines4</value>
+                <value>magic4</value>
+            </set>
+        </property>
+
+<!--        增加的对象集合-->
+        <property name="courseList">
+            <list>
+                <ref bean="course1"></ref>
+                <ref bean="course2"></ref>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="course1" class="com.geek.entity.Course">
+        <property name="cname" value="spring"></property>
+    </bean>
+    <bean id="course2" class="com.geek.entity.Course">
+        <property name="cname" value="mybatis"></property>
+    </bean>
+
+</beans>
