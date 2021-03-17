@@ -1,4 +1,4 @@
-# Spring 5
+# Spring 5 :candy:
 
 # 一、框架概述
 
@@ -393,5 +393,73 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
 
 ​    
 
-​    
+###     2.3.4 Factory Bean
+
+- spring 两种bean ，普通bean 和工厂bean
+- 普通bean： 配置文件中定义的bean 类型就是返回类型
+- 工厂bean : 配置文件中定义的bean类型可以和返回类型不一致
+  - 第一步，创建类，让这个类作为工厂bean，实现接口FactoryBean
+  - 第二部，实现接口里的方法，在实现的方法中定义返回的bean类型
+
+~~~java
+public class MyBean implements FactoryBean<Course> {
+    //返回bean的实例
+    //定义FactoryBean<Course>后 返回的是Course 对象，而不是myBean对象
+    public Course getObject() throws Exception {
+        Course course = new Course();
+        course.setCname("abcccc");
+        return course;
+    }
+    //返回bean的类型
+    public Class<?> getObjectType() {
+        return null;
+    }
+    //bean 是否是一个单例
+    public boolean isSingleton() {
+        return false;
+    }
+}
+
+~~~
+
+
+
+### 2.3.5 bean的作用域
+
+spring里 ，设置创建bean默认是单实例
+
+![image-20210317111508410](Spring 5.assets/image-20210317111508410.png)
+
+![image-20210317111547039](Spring 5.assets/image-20210317111547039.png)
+
+输出的地址相同
+
+
+
+> 设置bean 标签属性多实例
+>
+> - scope属性值
+>   - singleton ；默认值，表示是单实例对象
+>   - prototype： 表示多实例对象
+>
+> ~~~xml
+> <!--prototype 设置为多实例-->
+>     <bean id="myBean" class="com.geek.factorybean.MyBean" scope="prototype">
+>     </bean>
+> ~~~
+>
+> 再次执行对象地址不同
+>
+> ![image-20210317140216547](Spring 5.assets/image-20210317140216547.png)
+
+`singleton 与 prototype`的区别：
+
+1. 单实例与多实例
+2. 设为scope默认值singleton时，或不设置时，加载spring配置文件时自动创建单实例对象 
+
+
+
+
+
+
 

@@ -1,5 +1,6 @@
 import com.geek.entity.Book;
 import com.geek.entity.CollType;
+import com.geek.entity.Course;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -24,6 +25,13 @@ public class TestBean {
         ApplicationContext context = new ClassPathXmlApplicationContext("beanType.xml");
         Book book = context.getBean("book", Book.class);
         book.test();
+    }
+
+    @Test
+    public void factorybean(){
+        ApplicationContext context = new ClassPathXmlApplicationContext("factorybean.xml");
+        Course course = context.getBean("myBean", Course.class);
+        System.out.println(course);
     }
 
 }
