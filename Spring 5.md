@@ -459,7 +459,110 @@ spring里 ，设置创建bean默认是单实例
 
 
 
+### 2.3.6 Bean的声明周期
+
+#### 1、生命周期
+
+- 对象创建到对象销毁的过程 称为生命周期
 
 
 
+#### 2、bean的生命周期
+
+1. 通过构造器创建bean实例（无参数构造）
+2. 为bean的属性设置值或对其他bean的引用（调用set方法）
+3. 调用bean的初始化方法（需要进行配置初始化的方法）
+4. bean可以使用了（对象获取到）
+5. 当容器关闭时，调用bean的销毁的方法（需要配置销毁的方法）
+
+
+
+#### 3、实际调用
+
+~~~java
+public class Orders {
+
+    public Orders() {
+        System.out.println("1. 执行无参构造器创建bean实例");
+    }
+    private String oname;
+
+    public void setOname(String oname) {
+        this.oname = oname;
+        System.out.println("2. 调用set 方法设置属性值");
+    }
+    public void initMethod(){
+        System.out.println("3. 执行初始化方法");
+    }
+    public void DestroyMethod(){
+        System.out.println("5. 调用销毁方法");
+    }
+}
+
+~~~
+
+bean
+
+~~~xml
+    <bean name="orders" class="com.geek.entity.Orders" init-method="initMethod" destroy-method="DestroyMethod">
+<!--        指定他的初始化方法 和销毁方法 需手动销毁-->
+        <property name="oname" value="ccc"></property>
+    </bean>
+~~~
+
+test
+
+~~~java
+//    声明周期测试
+    @Test
+    public void beanTest1(){
+//        因为ApplicationContext没有close（）方法 所有需要调用子类ClassPathXmlApplicationContext的close
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("beanTest1.xml");
+        Orders orders = context.getBean("orders", Orders.class);
+        System.out.println("4.获取创建的bean实例对象");
+        System.out.println(orders);
+        //        需要手动销毁
+        context.close();
+
+    }
+~~~
+
+
+
+#### 4、bean的后置处理器 
+
+bean生命周期共7步
+
+1. 通过构造器创建bean实例（无参数构造）
+2. 为bean的属性设置值或对其他bean的引用（调用set方法）
+3. 把bean实例传递bean后置处理器方法
+4. 调用bean的初始化方法（需要进行配置初始化的方法）
+5. 调用完初始化方法后，再把bean实例传递bean后置处理器方法
+6. bean可以使用了（对象获取到）
+7. 当容器关闭时，调用bean的销毁的方法（需要配置销毁的方法）
+
+
+
+- 创建类，实现接口BeanPostProcessor，创建后置处理器
+
+~~~java
+public class MyBeanPost implements BeanPostProcessor{
+    @Override
+    public Object postProcessBeforeInitialization(Object o, String s) throws BeansException {
+        return null;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object o, String s) throws BeansException {
+        return null;
+    }
+~~~
+
+
+
+~~~xml
+<!--    配置后置处理器-->
+<!--    <bean name="MyBeanPost" class="com.geek.entity.MyBeanPost">-->
+<!--    </bean>-->
+~~~
 

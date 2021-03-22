@@ -1,6 +1,7 @@
 import com.geek.entity.Book;
 import com.geek.entity.CollType;
 import com.geek.entity.Course;
+import com.geek.entity.Orders;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -34,4 +35,16 @@ public class TestBean {
         System.out.println(course);
     }
 
+//    生命周期测试
+    @Test
+    public void beanTest1(){
+//        因为ApplicationContext没有close（）方法 所有需要调用子类ClassPathXmlApplicationContext的close
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("beanTest1.xml");
+        Orders orders = context.getBean("orders", Orders.class);
+        System.out.println("4.获取创建的bean实例对象");
+        System.out.println(orders);
+//        需要手动销毁
+        context.close();
+
+    }
 }

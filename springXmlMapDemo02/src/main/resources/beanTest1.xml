@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean name="orders" class="com.geek.entity.Orders" init-method="initMethod" destroy-method="DestroyMethod">
+<!--        指定他的初始化方法 和销毁方法 需手动销毁-->
+        <property name="oname" value="ccc"></property>
+    </bean>
+
+<!--    配置后置处理器-->
+<!--    <bean name="MyBeanPost" class="com.geek.entity.MyBeanPost">-->
+<!--    </bean>-->
+</beans>
