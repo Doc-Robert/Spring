@@ -566,3 +566,145 @@ public class MyBeanPost implements BeanPostProcessor{
 <!--    </bean>-->
 ~~~
 
+### 2.3.7 xml自动装配
+
+**根据指定的装配规则（属性名称或者属性类型 ），spring 自动将匹配的属性值进行注入**
+
+实例：
+
+~~~xml
+<!--    xml自动装配
+            bean标签 autowire，配置自动装配
+            autowire属性值:
+                byName:根据属性名称注入 ,注入bean的id值和类属性值名称一致
+                byType:根据属性类型注入
+-->
+    <bean id="emp" class="com.geek.autowire.Emp" autowire="byType">
+<!--        <property name="dept" ref="Dept"></property>-->
+    </bean>
+    <bean id="Dept" class="com.geek.autowire.Dept"> </bean>
+~~~
+
+
+
+### 2.3.8 外部属性文件
+
+1.配置连接池 druid
+
+~~~xml
+    <!--  直接配置druid连接池  -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/db_test"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="123456"></property>
+    </bean>
+~~~
+
+2.引入外部属性文件配置数据库连接池
+
+properties文件引入
+
+~~~xml
+ xmlns:context="http://www.springframework.org/schema/context"
+~~~
+
+引入名称空间
+
+~~~xml
+ <!-- 引入properties外部文件   -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+<!-- 引入 -->
+ <property name="driverClassName" value="${prop.driverClass}"></property>
+~~~
+
+[properties]
+
+~~~properties
+prop.driverClass = com.mysql.jdbc.Driver
+~~~
+
+
+
+### 2.3.9 基于注解方式
+
+![image-20210426145057521](Spring 5.assets/image-20210426145057521.png)
+
+组件扫描
+
+~~~xml
+<!--    开启组件扫描，多个包之间用，号隔开-->
+    <context:component-scan base-package="com.geek.service,com.geek.dao"/>
+<!--    扫描包的上层目录-->
+    <context:component-scan base-package="com.geek"/>
+~~~
+
+创建类，在类上添加创建对象注解
+
+~~~java
+//在注解里面value属性值可以忽略不写
+//默认值是类名称，首字母小写
+@Component
+public class UserService {
+
+//    @Override
+    public void add() {
+        System.out.println("service add");
+    }
+}
+
+~~~
+
+
+
+开启组件扫描细节配置
+
+```xml
+<!--    组件扫描配置-->
+<!--    1、
+            use-default-filters="false" 不使用默认filters，自己配置filter
+            include-filter 设置扫描哪些内容
+-->
+        <context:component-scan base-package="com.geek" use-default-filters="false">
+            <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        </context:component-scan>
+
+<!--    2、
+            下面设置扫描包的所有内容
+            <context:exclude-filter 设置哪些内容不进行扫描
+-->
+    <context:component-scan base-package="com.geek">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+```
+
+
+
+基于注解的形式进行属性注入
+
+- @Autowired 根据属性类型进行自动装配
+
+- @Qualifier 根据属性名称进行注入
+
+  - 要和@Autowired 一起使用
+
+    @Autowired 
+
+    @Qualifier(value = "userDaoImpl")
+
+- @Resource  可以根据类型注入，也可以根据名称注入
+
+- @Value 注入普通类型属性
+
+
+
+> 完全注解开发
+
+@Configuration
+
+# 三、AOP概念
+
+> AOP（面向切面编程）
+
+在软件业，AOP为Aspect Oriented Programming的缩写，意为：[面向切面编程](https://baike.baidu.com/item/面向切面编程/6016335)，通过[预编译](https://baike.baidu.com/item/预编译/3191547)方式和运行期间动态代理实现程序功能的统一维护的一种技术。AOP是[OOP](https://baike.baidu.com/item/OOP)的延续，是软件开发中的一个热点，也是[Spring](https://baike.baidu.com/item/Spring)框架中的一个重要内容，是[函数式编程](https://baike.baidu.com/item/函数式编程/4035031)的一种衍生范型。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的[耦合度](https://baike.baidu.com/item/耦合度/2603938)降低，提高程序的可重用性，同时提高了开发的效率。

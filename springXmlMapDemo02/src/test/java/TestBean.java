@@ -1,3 +1,4 @@
+import com.geek.autowire.Emp;
 import com.geek.entity.Book;
 import com.geek.entity.CollType;
 import com.geek.entity.Course;
@@ -45,6 +46,14 @@ public class TestBean {
         System.out.println(orders);
 //        需要手动销毁
         context.close();
+    }
+
+    @Test
+    public void beanAutoWire(){
+//        因为ApplicationContext没有close（）方法 所有需要调用子类ClassPathXmlApplicationContext的close
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("beanTest1.xml");
+        Emp emp = context.getBean("emp", Emp.class);
+        System.out.println(emp);
 
     }
 }

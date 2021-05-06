@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/beans/spring-context.xsd">
+
+    <!--  直接配置druid连接池  -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${prop.driverClass}"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/db_test"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="123456"></property>
+    </bean>
+
+    <!-- 引入properties外部文件   -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+<!--    开启组件扫描，多个包之间用，号隔开-->
+<!--    <context:component-scan base-package="com.geek.service,com.geek.dao"/>-->
+
+<!--    扫描包的上层目录-->
+<!--    <context:component-scan base-package="com.geek"/>-->
+
+<!--    组件扫描配置-->
+<!--    1、
+            use-default-filters="false" 不使用默认filters，自己配置filter
+            include-filter 设置扫描哪些内容
+-->
+        <context:component-scan base-package="com.geek" use-default-filters="false">
+            <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        </context:component-scan>
+
+<!--    2、
+            下面设置扫描包的所有内容
+            <context:exclude-filter 设置哪些内容不进行扫描
+-->
+    <context:component-scan base-package="com.geek">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+</beans>
