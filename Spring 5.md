@@ -556,6 +556,7 @@ public class MyBeanPost implements BeanPostProcessor{
     public Object postProcessAfterInitialization(Object o, String s) throws BeansException {
         return null;
     }
+}
 ~~~
 
 
@@ -579,10 +580,10 @@ public class MyBeanPost implements BeanPostProcessor{
                 byName:根据属性名称注入 ,注入bean的id值和类属性值名称一致
                 byType:根据属性类型注入
 -->
-    <bean id="emp" class="com.geek.autowire.Emp" autowire="byType">
-<!--        <property name="dept" ref="Dept"></property>-->
-    </bean>
-    <bean id="Dept" class="com.geek.autowire.Dept"> </bean>
+<bean id="emp" class="com.geek.autowire.Emp" autowire="byType">
+    <!--        <property name="dept" ref="Dept"></property>-->
+</bean>
+<bean id="Dept" class="com.geek.autowire.Dept"> </bean>
 ~~~
 
 
@@ -592,13 +593,13 @@ public class MyBeanPost implements BeanPostProcessor{
 1.配置连接池 druid
 
 ~~~xml
-    <!--  直接配置druid连接池  -->
-    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
-        <property name="url" value="jdbc:mysql://localhost:3306/db_test"></property>
-        <property name="username" value="root"></property>
-        <property name="password" value="123456"></property>
-    </bean>
+<!--  直接配置druid连接池  -->
+<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+    <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+    <property name="url" value="jdbc:mysql://localhost:3306/db_test"></property>
+    <property name="username" value="root"></property>
+    <property name="password" value="123456"></property>
+</bean>
 ~~~
 
 2.引入外部属性文件配置数据库连接池
@@ -612,11 +613,11 @@ properties文件引入
 引入名称空间
 
 ~~~xml
- <!-- 引入properties外部文件   -->
-    <context:property-placeholder location="classpath:jdbc.properties"/>
+<!-- 引入properties外部文件   -->
+<context:property-placeholder location="classpath:jdbc.properties"/>
 
 <!-- 引入 -->
- <property name="driverClassName" value="${prop.driverClass}"></property>
+<property name="driverClassName" value="${prop.driverClass}"></property>
 ~~~
 
 [properties]
@@ -635,9 +636,9 @@ prop.driverClass = com.mysql.jdbc.Driver
 
 ~~~xml
 <!--    开启组件扫描，多个包之间用，号隔开-->
-    <context:component-scan base-package="com.geek.service,com.geek.dao"/>
+<context:component-scan base-package="com.geek.service,com.geek.dao"/>
 <!--    扫描包的上层目录-->
-    <context:component-scan base-package="com.geek"/>
+<context:component-scan base-package="com.geek"/>
 ~~~
 
 创建类，在类上添加创建对象注解
@@ -648,7 +649,7 @@ prop.driverClass = com.mysql.jdbc.Driver
 @Component
 public class UserService {
 
-//    @Override
+    //    @Override
     public void add() {
         System.out.println("service add");
     }
@@ -666,17 +667,17 @@ public class UserService {
             use-default-filters="false" 不使用默认filters，自己配置filter
             include-filter 设置扫描哪些内容
 -->
-        <context:component-scan base-package="com.geek" use-default-filters="false">
-            <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-        </context:component-scan>
+<context:component-scan base-package="com.geek" use-default-filters="false">
+    <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+</context:component-scan>
 
 <!--    2、
             下面设置扫描包的所有内容
             <context:exclude-filter 设置哪些内容不进行扫描
 -->
-    <context:component-scan base-package="com.geek">
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-    </context:component-scan>
+<context:component-scan base-package="com.geek">
+    <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+</context:component-scan>
 ```
 
 
@@ -708,3 +709,350 @@ public class UserService {
 > AOP（面向切面编程）
 
 在软件业，AOP为Aspect Oriented Programming的缩写，意为：[面向切面编程](https://baike.baidu.com/item/面向切面编程/6016335)，通过[预编译](https://baike.baidu.com/item/预编译/3191547)方式和运行期间动态代理实现程序功能的统一维护的一种技术。AOP是[OOP](https://baike.baidu.com/item/OOP)的延续，是软件开发中的一个热点，也是[Spring](https://baike.baidu.com/item/Spring)框架中的一个重要内容，是[函数式编程](https://baike.baidu.com/item/函数式编程/4035031)的一种衍生范型。利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的[耦合度](https://baike.baidu.com/item/耦合度/2603938)降低，提高程序的可重用性，同时提高了开发的效率。
+
+
+
+
+
+## 3.1 Aop底层原理
+
+AOP底层**使用动态代理**
+
+> 基于接口
+>
+> 基于类
+
+- 两种代理情况
+  - 有接口，使用jdk动态代理，增强类方法
+
+    ![image-20210507091157809](Spring 5.assets/image-20210507091157809.png)
+
+  - 没有接口情况，使用CGLIB动态 代理
+    创建子类代理对象，增强类方法
+
+  ![image-20210507091527506](Spring 5.assets/image-20210507091527506.png)
+
+## 3.2 使用jdk动态代理
+
+- 使用**Proxy**类里面的方法擦护功能键代理对象·
+
+> java.lang.reflect
+>
+> ## Class Proxy
+>
+> - [java.lang.Object](https://www.matools.com/file/manual/jdk_api_1.8_google/java/lang/Object.html)
+> - - java.lang.reflect.Proxy
+
+- 调用newProxyInstance方法
+
+![image-20210507092917923](Spring 5.assets/image-20210507092917923.png)
+
+方法供三个参数：
+
+第一个参数：类加载器
+
+第二个参数：增强方法所在的类，这个类实现的接口，支持多个接口
+
+第三个参数：用类 实现这个接口 InvocationHandler。创建代理对象，写增强的方法
+
+
+
+- 编写jdk动态代理代码
+
+  - 创建接口，编写方法
+  - 创建实现类，实现该接口
+
+  ~~~java
+  //（1）创建接口，定义方法
+  public interface UserDao {
+      public int add(int a,int b);
+      public String update(String id);
+  }
+  
+  //（2）创建接口实现类，实现方法
+  public class UserDaoImpl implements UserDao {
+      @Override
+      public int add(int a, int b) {
+          return a+b;
+      }
+      @Override
+      public String update(String id) {
+          return id;
+      }
+  }
+  
+  ~~~
+
+  
+
+  
+
+*使用 Proxy 类创建接口代理对象*
+
+~~~java
+//（3）使用 Proxy 类创建接口代理对象
+public class JDKProxy {
+ 	public static void main(String[] args) {
+         //创建接口实现类代理对象
+         Class[] interfaces = {UserDao.class};
+         UserDaoImpl userDao = new UserDaoImpl(); 
+        /** 第一参数，类加载器 
+            第二参数，增强方法所在的类，这个类实现的接口，(支持多个接口)
+            第三参数，新建一个类，实现这个接口 InvocationHandler，创建代理对象，写增强的部分  */
+         UserDao dao =(UserDao) Proxy.newProxyInstance(JDKProxy.class.getClassLoader(), interfaces,new UserDaoProxy(userDao));
+         int result = dao.add(1, 2);
+        
+         System.out.println("result:"+result);
+     }
+}
+
+//创建代理对象代码
+class UserDaoProxy implements InvocationHandler {
+    
+     //1 把创建的是谁的代理对象，把谁传递过来
+     //有参数构造传递
+     private Object obj;
+     public UserDaoProxy(Object obj) {
+     	this.obj = obj;
+     }
+    
+     //增强的逻辑
+     @Override
+     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+         //方法之前
+         System.out.println("方法之前执行...."+method.getName()+" :传递的参数..."+ Arrays.toString(args));
+         
+         //被增强的方法执行
+         Object res = method.invoke(obj, args);
+         
+         //方法之后
+         System.out.println("方法之后执行...."+obj);
+         
+         return res;
+     }
+}
+~~~
+
+`动态代理的好处：`
+
+- 一个动态代理类代理的是一个接口，一般就是对应一类业务
+- 一个动态代理类可以代理多个类，只要实现同一接口
+
+
+
+
+
+## 3.3 AOP术语
+
+> 1. 链接点 ：
+>
+>    ​	类中哪些方法可以被增强，这些方法被称为连接点
+>
+> 2. 切入点
+>
+>    ​	实际被增强的方法，称为切入点
+>
+> 3. 通知（增强）
+>
+>    - 实际增强的逻辑部分称为通知（增强）
+>    - 通知有多种类型
+>      - 前置通知
+>      - 后置通知
+>      - 环绕通知
+>      - 异常通知
+>      - 最终通知（finally）
+>
+> 4. 切面
+>
+>    ​	把通知应用到切入点的过程
+
+### Aop在spring中的作用
+
+提供声明式事务，语序用户自定义切面
+
+![image-20210509162212774](Spring 5.assets/image-20210509162212774.png)
+
+
+
+![image-20210509163329372](Spring 5.assets/image-20210509163329372.png)
+
+## 3.4 Aop 实现方式
+
+使用AspectJ 框架
+
+![image-20210509161220829](Spring 5.assets/image-20210509161220829.png)
+
+### 方式一： spring原生api接口
+
+导入[AspectJ Weaver](https://mvnrepository.com/artifact/org.aspectj/aspectjweaver)
+
+```xml
+<dependency>
+   <groupId>org.aspectj</groupId>
+   <artifactId>aspectjweaver</artifactId>
+   <version>1.9.4</version>
+</dependency>
+```
+
+service 实现
+
+**接口**
+
+```java
+public interface UserService {
+
+    public void add();
+    public void update();
+    public void delete();
+    public void select();
+    
+}
+```
+
+**实现类**
+
+```java
+public class UserServiceImpl implements UserService{
+    @Override
+    public void add() {
+        System.out.println("增加用户");
+    }
+
+    @Override
+    public void update() {
+        System.out.println("修改用户");
+
+    }
+
+    @Override
+    public void delete() {
+        System.out.println("删除用户");
+
+    }
+
+    @Override
+    public void select() {
+        System.out.println("查询用户");
+
+    }
+}
+```
+
+**两个log**
+
+- 目标方法执行前
+
+```java
+public class Log implements MethodBeforeAdvice {
+
+    // method :要执行的目标对象的方法
+    // args： 参数
+    // target：目标对象
+    @Override
+    public void before(Method method, Object[] args, Object target) throws Throwable {
+        System.out.println(target.getClass().getName()+"的"+method.getName()+"方法，被执行了");
+
+    }
+
+}
+```
+
+- 目标方法执行后
+
+```java
+public class AfterLog implements AfterReturningAdvice {
+
+    //returnValue 执行后返回值
+
+    @Override
+    public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
+        System.out.println("执行了"+method.getName()+"方法，返回了结果为："+returnValue);
+    }
+}
+```
+
+注册到spring 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--注册bean-->
+    <bean id="userService" class="com.geek.springaop.service.UserServiceImpl" ></bean>
+    <bean id="log" class="com.geek.springaop.log.Log"/>
+    <bean id="afterLog" class="com.geek.springaop.log.AfterLog"/>
+
+<!--    使用spring原生api-->
+    <!--配置aop:需要导入aop约束-->
+    <aop:config>
+        <!--切入点：expression 表达式，execution()要执行的位置 UserServiceImpl.*(..) 下的所有方法 -->
+        <aop:pointcut id="pointcut" expression="execution(* com.geek.springaop.service.UserServiceImpl.*(..))"/>
+
+        <!--执行环绕增强-->
+        <aop:advisor advice-ref="log" pointcut-ref="pointcut"/>
+        <aop:advisor advice-ref="afterLog" pointcut-ref="pointcut"/>
+    </aop:config>
+
+
+</beans>
+```
+
+**测试**
+
+```java
+@Test
+void contextLoads() {
+   ApplicationContext context = new ClassPathXmlApplicationContext("springContext.xml");
+   //动态代理 代理的是接口
+   UserService userService = (UserService) context.getBean("userService");
+
+   userService.add();
+
+}
+```
+
+### 方式二：自定义类
+
+> （切面定义）
+
+自定义增强方法
+
+```java
+//自定义before after 方法
+public class Diy {
+
+    public void before(){
+        System.out.println("===方法执行前===");
+    }
+
+    public void after(){
+        System.out.println("===方法执行后===");
+    }
+}
+```
+
+xml注册自定义aop
+
+```xml
+<!-- 方式二: 自定义类   -->
+<bean id="diy" class="com.geek.springaop.diy.Diy"/>
+<aop:config>
+    <!--自定义切面 ref 指定引用的类-->
+    <aop:aspect ref="diy">
+        <!--切入点-->
+        <aop:pointcut id="point" expression="execution(* com.geek.springaop.service.UserServiceImpl.*(..))"/>
+        <!--通知-->
+        <aop:before method="before" pointcut-ref="point"></aop:before>
+        <aop:after method="after" pointcut-ref="point"></aop:after>
+    </aop:aspect>
+</aop:config>
+```
+
+
+
+### 注解实现
+
