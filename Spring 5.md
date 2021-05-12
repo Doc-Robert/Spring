@@ -1056,3 +1056,374 @@ xml注册自定义aop
 
 ### 注解实现
 
+> 注解实现aop
+
+```xml
+<!--方式三：通过注解方式-->
+<bean id="annotationPointCut" class="com.geek.springaop.annotation.AnnotationPointCut"/>
+<!--开启注解支持 自动代理 jdk (默认) proxy-target-class="false"-->
+<aop:aspectj-autoproxy />
+```
+
+
+
+@Aspect 注解开启
+
+```java
+@Aspect
+public class AnnotationPointCut {
+
+    @Before("execution(* com.geek.springaop.service.UserServiceImpl.*(..))")
+    public void before(){
+        System.out.println("===方法执行前===");
+    }
+
+    @After("execution(* com.geek.springaop.service.UserServiceImpl.*(..))")
+    public void after(){
+        System.out.println("===方法执行后===");
+    }
+
+    //在环绕增强中，可以给定一个参数 代表我们要获取处理切入的点
+    @Around("execution(* com.geek.springaop.service.UserServiceImpl.*(..))")
+    public void around(ProceedingJoinPoint joinPoint) throws Throwable {
+        System.out.println("环绕前");
+
+        Signature signature = joinPoint.getSignature();//获得签名  执行的该方法
+        System.out.println(signature);
+
+        joinPoint.proceed();//执行方法
+
+        System.out.println("环绕后");
+    }
+}
+```
+
+
+
+
+
+
+
+# 四、spring-mybatis
+
+http://mybatis.org/spring/
+
+
+
+
+
+
+
+# 五、声明式事务
+
+## 1、事务回顾
+
+![image-20210510093522636](Spring 5.assets/image-20210510093522636.png)
+
+http://mybatis.org/spring/transactions.html
+
+
+
+
+
+# 六、JDBC模板
+
+**概念：**
+
+​	Spring框架 对jdbc 进行封装 使用jdbc template 快速对数据库进行crud
+
+添加依赖：
+
+```xml
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-jdbc</artifactId>
+    <version>5.3.6</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-orm</artifactId>
+    <version>5.3.6</version>
+</dependency>
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid</artifactId>
+    <version>1.2.6</version>
+</dependency>
+```
+
+配置druid 数据库连接池
+
+```properties
+spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/db_test?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=123456
+
+```
+
+
+
+## 6.1 jdbcTemplate 增删改操作
+
+编写service 和dao
+
+实体
+
+```java
+@Data
+public class Book {
+
+    private String userId;
+    private String username;
+    private String userStatus;
+    
+}
+```
+
+Service
+
+```java
+@Component
+public class BookService {
+
+    @Autowired
+    private BookDao bookDao;
+
+    public void add(Book book){
+        bookDao.add(book);
+    }
+
+    public void update(Book book) {
+        bookDao.update(book);
+    }
+
+
+    public void delete(String id){
+        bookDao.delete(id);
+    }
+    
+    public int selectCount(){
+        return bookDao.selectCount();
+    }
+
+}
+```
+
+dao接口 和实现类
+
+```java
+public interface BookDao {
+
+    void add(Book book);
+
+    void update(Book book);
+
+    void delete(String id);
+    
+    int selectCount();
+}
+```
+
+```java
+@Service
+public class BookDaoImpl implements BookDao{
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+
+    @Override
+    public void add(Book book) {
+        String sql = "insert into book value(?,?,?)";
+
+        Object args[] = {book.getUserId(),book.getUsername(),book.getUserStatus()};
+
+        int update = jdbcTemplate.update(sql, args);
+
+        System.out.println(update);
+
+    }
+
+    @Override
+    public void update(Book book) {
+        String sql = "update book set username=?,user_status=? where user_id=?";
+
+        Object args[] = {book.getUsername(),book.getUserStatus(),book.getUserId()};
+
+        int update = jdbcTemplate.update(sql, args);
+        System.out.println(update);
+    }
+
+    @Override
+    public void delete(String id) {
+        String sql = "delete from book where user_id=?";
+        int update = jdbcTemplate.update(sql, id);
+        System.out.println(update);
+    }
+}
+```
+
+
+
+## 6.2 jdbcTemplate 查询
+
+### 查询返回某个值
+
+jdbcTemplate 查询表中记录数
+
+![image-20210512094105481](Spring 5.assets/image-20210512094105481.png)
+
+参数： sql 语句 和 返回类型Class
+
+
+
+```java
+@Override
+public int selectCount() {
+    String sql = "select count(*) from book";
+    Integer query = jdbcTemplate.queryForObject(sql, Integer.class);
+    return query;
+}
+```
+
+
+
+测试方法
+
+```java
+@Autowired
+private BookService bookService;
+
+@Test
+void contextLoads() {
+
+    Book book = new Book();
+    book.setUserId("2");
+    book.setUsername("Reines");
+    book.setUserStatus("void");
+
+    //crud
+    //bookService.add(book);
+    //bookService.update(book);
+    //bookService.delete("");
+
+    //查询记录数
+    int i = bookService.selectCount();
+    System.out.println(i);
+}
+```
+
+
+
+### 查询返回对象 和 集合
+
+对象
+
+![image-20210512095752717](Spring 5.assets/image-20210512095752717.png)
+
+​	参数：
+
+- sql语句
+- RowMapper接口，针对返回不同数据类型，使用这个接口里面实现类完成数据封装
+- 传入的sql 参数值
+
+集合
+
+
+
+```java
+@Override
+public Book selectOne(String id) {
+    String sql = "select * from book where user_id=?";
+    Book book = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<Book>(Book.class), id);
+    return book;
+}
+
+@Override
+public List<Book> findAll() {
+    String sql = "select * from book";
+    List<Book> bookList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<Book>(Book.class));
+    return bookList;
+}
+```
+
+
+
+## 6.3 jdbcTemplate批量操作
+
+![image-20210512110722725](Spring 5.assets/image-20210512110722725.png)
+
+批量操作	参数：
+
+- sql语句
+- list集合 多条数据记录
+
+### 批量添加，删除，修改
+
+测试方法
+
+```java
+@Test
+public void addBatch(){
+    List<Object[]> arrayList = new ArrayList<>();
+    Object[] o1 ={"3","violet","code"};
+    Object[] o2 ={"4","under","code"};
+
+    arrayList.add(o1);
+    arrayList.add(o2);
+    bookService.batchAdd(arrayList);
+}
+
+@Test
+public void updateBatch(){
+    List<Object[]> arrayList = new ArrayList<>();
+    Object[] o1 ={"violet1","code","3"};
+    Object[] o2 ={"under1","code","4"};
+
+    arrayList.add(o1);
+    arrayList.add(o2);
+    bookService.batchUpdate(arrayList);
+}
+
+@Test
+public void deleteBatch(){
+    List<Object[]> arrayList = new ArrayList<>();
+    Object[] o1 ={"3"};
+    Object[] o2 ={"4"};
+
+    arrayList.add(o1);
+    arrayList.add(o2);
+    bookService.batchDelete(arrayList);
+}
+```
+
+实现方法
+
+```java
+@Override
+public void batchAdd(List<Object[]> batchArgs) {
+    String sql = "insert into book value(?,?,?)";
+    int[] ints = jdbcTemplate.batchUpdate(sql, batchArgs);
+    System.out.println(ints);
+}
+
+@Override
+public void batchUpdate(List<Object[]> batchArgs) {
+    String sql = "update book set username=?,user_status=? where user_id=?";
+    int[] ints = jdbcTemplate.batchUpdate(sql, batchArgs);
+    System.out.println(ints);
+}
+
+@Override
+public void batchDelete(List<Object[]> batchArgs) {
+    String sql = "delete from book where user_id=?";
+    int[] ints = jdbcTemplate.batchUpdate(sql, batchArgs);
+    System.out.println(ints);
+}
+```
